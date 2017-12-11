@@ -107,7 +107,6 @@
       this.context = options.context;
       this.bpm = options.bpm;
       this.nextNoteTime = 0;
-      this.secondsPerBeat = 60 / this.bpm;
     }
 
     // frameTime は requestAnimationFrame から渡される値で millisecond (double)
@@ -125,6 +124,10 @@
 
     clickNow() {
       this.nextNoteTime = this.context.currentTime;
+    }
+
+    set bpm(v) {
+      this.secondsPerBeat = 60 / v;
     }
   }
 
@@ -146,6 +149,7 @@
         this.running = false;
       } else {
         this.running = true;
+        this.clickScheduler.bpm = this.getBpm();
         this.clickScheduler.clickNow();
         window.requestAnimationFrame(this.tick.bind(this));
       }
@@ -157,6 +161,14 @@
       const r = this.clickScheduler.enqueue(timestamp);
       this.lightScheduler.tick(timestamp, r);
       window.requestAnimationFrame(this.tick.bind(this));
+    }
+
+    getBpm() {
+      const i = window.parseInt(document.querySelector("[name=bpm]").value);
+      if (isNaN(i) || i < 1) {
+        return 60;
+      }
+      return i;
     }
   }
 

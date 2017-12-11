@@ -141,7 +141,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.context = options.context;
       this.bpm = options.bpm;
       this.nextNoteTime = 0;
-      this.secondsPerBeat = 60 / this.bpm;
     }
 
     // frameTime は requestAnimationFrame から渡される値で millisecond (double)
@@ -166,6 +165,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "clickNow",
       value: function clickNow() {
         this.nextNoteTime = this.context.currentTime;
+      }
+    }, {
+      key: "bpm",
+      set: function set(v) {
+        this.secondsPerBeat = 60 / v;
       }
     }]);
 
@@ -194,6 +198,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.running = false;
         } else {
           this.running = true;
+          this.clickScheduler.bpm = this.getBpm();
           this.clickScheduler.clickNow();
           window.requestAnimationFrame(this.tick.bind(this));
         }
@@ -208,6 +213,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var r = this.clickScheduler.enqueue(timestamp);
         this.lightScheduler.tick(timestamp, r);
         window.requestAnimationFrame(this.tick.bind(this));
+      }
+    }, {
+      key: "getBpm",
+      value: function getBpm() {
+        var i = window.parseInt(document.querySelector("[name=bpm]").value);
+        if (isNaN(i) || i < 1) {
+          return 60;
+        }
+        return i;
       }
     }]);
 
