@@ -122,35 +122,43 @@
       // indicator を表示すべき時間を返す
       return frameTime + (untilNextNote * 1000);
     };
-  }
 
-  const context = new (window["AudioContext"] || window["webkitAudioContext"])();
-  const clickScheduler = new ClickScheduler({context: context, bpm: 60});
-
-  let running = false;
-  document.querySelector("#toggle").addEventListener("click", function() {
-    if (running) {
-      running = false;
-    } else {
-      running = true;
-      window.requestAnimationFrame(frame);
-      nextNoteTime = context.currentTime;
+    clickNow() {
+      this.nextNoteTime = this.context.currentTime;
     }
-  });
-
-  const light = new Light(document.querySelector("#light"));
-  const lightScheduler = new LightScheduler(light);
-
-  const frame = function(timestamp) {
-    if (!running) { return; }
-
-    const r = clickScheduler.enqueue(timestamp);
-    lightScheduler.tick(timestamp, r);
-    window.requestAnimationFrame(frame);
   }
 
-  window.requestAnimationFrame(frame);
+  class App {
+    constructor() {
+      const context = new (window["AudioContext"] || window["webkitAudioContext"])();
+      this.clickScheduler = new ClickScheduler({context: context, bpm: 60});
 
-  window.context = context;
+      const light = new Light(document.querySelector("#light"));
+      this.lightScheduler = new LightScheduler(light);
 
+      this.running = false;
+
+      document.querySelector("#toggle").addEventListener("click", this.toggle.bind(this));
+    }
+
+    toggle() {
+      if (this.running) {
+        this.running = false;
+      } else {
+        this.running = true;
+        this.clickScheduler.clickNow();
+        window.requestAnimationFrame(this.tick.bind(this));
+      }
+    }
+
+    tick(timestamp) {
+      if (!this.running) { return; }
+
+      const r = this.clickScheduler.enqueue(timestamp);
+      this.lightScheduler.tick(timestamp, r);
+      window.requestAnimationFrame(this.tick.bind(this));
+    }
+  }
+
+  new App();
 }());

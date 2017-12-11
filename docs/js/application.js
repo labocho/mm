@@ -162,39 +162,57 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // indicator を表示すべき時間を返す
         return frameTime + untilNextNote * 1000;
       }
+    }, {
+      key: "clickNow",
+      value: function clickNow() {
+        this.nextNoteTime = this.context.currentTime;
+      }
     }]);
 
     return ClickScheduler;
   }();
 
-  var context = new (window["AudioContext"] || window["webkitAudioContext"])();
-  var clickScheduler = new ClickScheduler({ context: context, bpm: 60 });
+  var App = function () {
+    function App() {
+      _classCallCheck(this, App);
 
-  var running = false;
-  document.querySelector("#toggle").addEventListener("click", function () {
-    if (running) {
-      running = false;
-    } else {
-      running = true;
-      window.requestAnimationFrame(frame);
-      nextNoteTime = context.currentTime;
-    }
-  });
+      var context = new (window["AudioContext"] || window["webkitAudioContext"])();
+      this.clickScheduler = new ClickScheduler({ context: context, bpm: 60 });
 
-  var light = new Light(document.querySelector("#light"));
-  var lightScheduler = new LightScheduler(light);
+      var light = new Light(document.querySelector("#light"));
+      this.lightScheduler = new LightScheduler(light);
 
-  var frame = function frame(timestamp) {
-    if (!running) {
-      return;
+      this.running = false;
+
+      document.querySelector("#toggle").addEventListener("click", this.toggle.bind(this));
     }
 
-    var r = clickScheduler.enqueue(timestamp);
-    lightScheduler.tick(timestamp, r);
-    window.requestAnimationFrame(frame);
-  };
+    _createClass(App, [{
+      key: "toggle",
+      value: function toggle() {
+        if (this.running) {
+          this.running = false;
+        } else {
+          this.running = true;
+          this.clickScheduler.clickNow();
+          window.requestAnimationFrame(this.tick.bind(this));
+        }
+      }
+    }, {
+      key: "tick",
+      value: function tick(timestamp) {
+        if (!this.running) {
+          return;
+        }
 
-  window.requestAnimationFrame(frame);
+        var r = this.clickScheduler.enqueue(timestamp);
+        this.lightScheduler.tick(timestamp, r);
+        window.requestAnimationFrame(this.tick.bind(this));
+      }
+    }]);
 
-  window.context = context;
+    return App;
+  }();
+
+  new App();
 })();
