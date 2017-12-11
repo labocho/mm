@@ -55,27 +55,69 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   };
 
   var context = new (window["AudioContext"] || window["webkitAudioContext"])();
-  var bpm = 120;
+  var bpm = 60;
   var queue = [];
   var nextNoteTime = 0;
   var secondsPerBeat = 60 / bpm;
-  var timer = null;
-  var enqueue = function enqueue() {
+
+  // frameTime は requestAnimationFrame から渡される値で millisecond (double)
+  var enqueue = function enqueue(frameTime) {
     // 25ms 以内に次の音を鳴らすべきなら enqueue
-    if (nextNoteTime < context.currentTime + 0.025) {
-      var v = new Voice({ context: context });
-      v.play(nextNoteTime);
-      nextNoteTime += secondsPerBeat;
+    var untilNextNote = nextNoteTime - context.currentTime; // in seconds (double)
+    if (untilNextNote > 0.025) {
+      return;
     }
+
+    var v = new Voice({ context: context });
+    v.play(nextNoteTime);
+    nextNoteTime += secondsPerBeat;
+    // indicator を表示すべき時間を返す
+    return frameTime + untilNextNote * 1000;
   };
+
+  var running = false;
   document.querySelector("#toggle").addEventListener("click", function () {
-    if (timer) {
-      window.clearInterval(timer);
+    if (running) {
+      running = false;
     } else {
+      running = true;
+      window.requestAnimationFrame(frame);
       nextNoteTime = context.currentTime;
-      timer = window.setInterval(enqueue, 10);
     }
   });
+
+  var nextLightingTime = 0;
+  var lighting = false;
+
+  var switchLight = function switchLight(timestamp, enqueueResult) {
+    if (enqueueResult) {
+      nextLightingTime = enqueueResult;
+    }
+
+    if (nextLightingTime <= timestamp && timestamp <= nextLightingTime + 200) {
+      if (!lighting) {
+        console.log("light on");
+        lighting = true;
+      }
+    } else {
+      if (lighting) {
+        console.log("light off");
+        lighting = false;
+      }
+    }
+  };
+
+  var frame = function frame(timestamp) {
+    if (!running) {
+      return;
+    }
+
+    var r = enqueue(timestamp);
+    switchLight(timestamp, r);
+    window.requestAnimationFrame(frame);
+  };
+
+  window.requestAnimationFrame(frame);
 
   window.context = context;
 })();

@@ -40,27 +40,65 @@
   };
 
   const context = new (window["AudioContext"] || window["webkitAudioContext"])();
-  const bpm = 120;
+  const bpm = 60;
   const queue = [];
   let nextNoteTime = 0;
   let secondsPerBeat = 60 / bpm;
-  let timer = null;
-  const enqueue = function() {
+
+  // frameTime は requestAnimationFrame から渡される値で millisecond (double)
+  const enqueue = function(frameTime) {
     // 25ms 以内に次の音を鳴らすべきなら enqueue
-    if (nextNoteTime < context.currentTime + 0.025) {
-      const v = new Voice({context: context});
-      v.play(nextNoteTime);
-      nextNoteTime += secondsPerBeat;
-    }
+    const untilNextNote = nextNoteTime - context.currentTime; // in seconds (double)
+    if (untilNextNote > 0.025) { return; }
+
+    const v = new Voice({context: context});
+    v.play(nextNoteTime);
+    nextNoteTime += secondsPerBeat;
+    // indicator を表示すべき時間を返す
+    return frameTime + (untilNextNote * 1000);
   };
+
+  let running = false;
   document.querySelector("#toggle").addEventListener("click", function() {
-    if (timer) {
-      window.clearInterval(timer);
+    if (running) {
+      running = false;
     } else {
+      running = true;
+      window.requestAnimationFrame(frame);
       nextNoteTime = context.currentTime;
-      timer = window.setInterval(enqueue, 10);
     }
   });
+
+  let nextLightingTime = 0;
+  let lighting = false;
+
+  const switchLight = function(timestamp, enqueueResult) {
+    if (enqueueResult) {
+      nextLightingTime = enqueueResult;
+    }
+
+    if (nextLightingTime <= timestamp && timestamp <= nextLightingTime + 200) {
+      if (!lighting) {
+        console.log("light on");
+        lighting = true;
+      }
+    } else {
+      if (lighting) {
+        console.log("light off");
+        lighting = false;
+      }
+    }
+  };
+
+  const frame = function(timestamp) {
+    if (!running) { return; }
+
+    const r = enqueue(timestamp);
+    switchLight(timestamp, r);
+    window.requestAnimationFrame(frame);
+  }
+
+  window.requestAnimationFrame(frame);
 
   window.context = context;
 
