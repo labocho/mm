@@ -54,6 +54,73 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     release: 0.1
   };
 
+  var Light = function () {
+    function Light(canvas) {
+      _classCallCheck(this, Light);
+
+      this.context = canvas.getContext("2d");
+      this.width = canvas.width;
+      this.height = canvas.height;
+      this.lit = false;
+    }
+
+    _createClass(Light, [{
+      key: "on",
+      value: function on() {
+        this.lit = true;
+        this.clear();
+        this.context.fillStyle = "#000";
+        this.context.beginPath();
+        this.context.arc(50, 50, 10, 0, 2 * Math.PI);
+        this.context.fill();
+      }
+    }, {
+      key: "off",
+      value: function off() {
+        this.lit = false;
+        this.clear();
+      }
+    }, {
+      key: "clear",
+      value: function clear() {
+        this.context.fillStyle = "#fff";
+        this.context.fillRect(0, 0, this.width, this.height);
+      }
+    }]);
+
+    return Light;
+  }();
+
+  var LightScheduler = function () {
+    function LightScheduler(light) {
+      _classCallCheck(this, LightScheduler);
+
+      this.light = light;
+      this.nextLightingTime = 0;
+    }
+
+    _createClass(LightScheduler, [{
+      key: "tick",
+      value: function tick(timestamp, nextLightingTime) {
+        if (nextLightingTime) {
+          this.nextLightingTime = nextLightingTime;
+        }
+
+        if (this.nextLightingTime <= timestamp && timestamp <= this.nextLightingTime + 200) {
+          if (!this.light.lit) {
+            light.on();
+          }
+        } else {
+          if (this.light.lit) {
+            this.light.off();
+          }
+        }
+      }
+    }]);
+
+    return LightScheduler;
+  }();
+
   var context = new (window["AudioContext"] || window["webkitAudioContext"])();
   var bpm = 60;
   var queue = [];
@@ -86,26 +153,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
   });
 
-  var nextLightingTime = 0;
-  var lighting = false;
-
-  var switchLight = function switchLight(timestamp, enqueueResult) {
-    if (enqueueResult) {
-      nextLightingTime = enqueueResult;
-    }
-
-    if (nextLightingTime <= timestamp && timestamp <= nextLightingTime + 200) {
-      if (!lighting) {
-        console.log("light on");
-        lighting = true;
-      }
-    } else {
-      if (lighting) {
-        console.log("light off");
-        lighting = false;
-      }
-    }
-  };
+  var light = new Light(document.querySelector("#light"));
+  var lightScheduler = new LightScheduler(light);
 
   var frame = function frame(timestamp) {
     if (!running) {
@@ -113,7 +162,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     var r = enqueue(timestamp);
-    switchLight(timestamp, r);
+    lightScheduler.tick(timestamp, r);
     window.requestAnimationFrame(frame);
   };
 

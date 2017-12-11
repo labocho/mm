@@ -39,6 +39,57 @@
     release: 0.1,
   };
 
+  class Light {
+    constructor(canvas) {
+      this.context = canvas.getContext("2d");
+      this.width = canvas.width;
+      this.height = canvas.height;
+      this.lit = false;
+    }
+
+    on() {
+      this.lit = true;
+      this.clear();
+      this.context.fillStyle = "#000";
+      this.context.beginPath();
+      this.context.arc(50, 50, 10, 0, 2 * Math.PI);
+      this.context.fill();
+    }
+
+    off() {
+      this.lit = false;
+      this.clear();
+    }
+
+    clear() {
+      this.context.fillStyle = "#fff";
+      this.context.fillRect(0, 0, this.width, this.height);
+    }
+  }
+
+  class LightScheduler {
+    constructor(light) {
+      this.light = light;
+      this.nextLightingTime = 0;
+    }
+
+    tick(timestamp, nextLightingTime) {
+      if (nextLightingTime) {
+        this.nextLightingTime = nextLightingTime;
+      }
+
+      if (this.nextLightingTime <= timestamp && timestamp <= this.nextLightingTime + 200) {
+        if (!this.light.lit) {
+          light.on();
+        }
+      } else {
+        if (this.light.lit) {
+          this.light.off();
+        }
+      }
+    }
+  }
+
   const context = new (window["AudioContext"] || window["webkitAudioContext"])();
   const bpm = 60;
   const queue = [];
@@ -69,32 +120,14 @@
     }
   });
 
-  let nextLightingTime = 0;
-  let lighting = false;
-
-  const switchLight = function(timestamp, enqueueResult) {
-    if (enqueueResult) {
-      nextLightingTime = enqueueResult;
-    }
-
-    if (nextLightingTime <= timestamp && timestamp <= nextLightingTime + 200) {
-      if (!lighting) {
-        console.log("light on");
-        lighting = true;
-      }
-    } else {
-      if (lighting) {
-        console.log("light off");
-        lighting = false;
-      }
-    }
-  };
+  const light = new Light(document.querySelector("#light"));
+  const lightScheduler = new LightScheduler(light);
 
   const frame = function(timestamp) {
     if (!running) { return; }
 
     const r = enqueue(timestamp);
-    switchLight(timestamp, r);
+    lightScheduler.tick(timestamp, r);
     window.requestAnimationFrame(frame);
   }
 
