@@ -134,26 +134,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return LightScheduler;
   }();
 
-  var context = new (window["AudioContext"] || window["webkitAudioContext"])();
-  var bpm = 60;
-  var queue = [];
-  var nextNoteTime = 0;
-  var secondsPerBeat = 60 / bpm;
+  var ClickScheduler = function () {
+    function ClickScheduler(options) {
+      _classCallCheck(this, ClickScheduler);
 
-  // frameTime は requestAnimationFrame から渡される値で millisecond (double)
-  var enqueue = function enqueue(frameTime) {
-    // 25ms 以内に次の音を鳴らすべきなら enqueue
-    var untilNextNote = nextNoteTime - context.currentTime; // in seconds (double)
-    if (untilNextNote > 0.025) {
-      return;
+      this.context = options.context;
+      this.bpm = options.bpm;
+      this.nextNoteTime = 0;
+      this.secondsPerBeat = 60 / this.bpm;
     }
 
-    var v = new Voice({ context: context });
-    v.play(nextNoteTime);
-    nextNoteTime += secondsPerBeat;
-    // indicator を表示すべき時間を返す
-    return frameTime + untilNextNote * 1000;
-  };
+    // frameTime は requestAnimationFrame から渡される値で millisecond (double)
+
+
+    _createClass(ClickScheduler, [{
+      key: "enqueue",
+      value: function enqueue(frameTime) {
+        // 25ms 以内に次の音を鳴らすべきなら enqueue
+        var untilNextNote = this.nextNoteTime - this.context.currentTime; // in seconds (double)
+        if (untilNextNote > 0.025) {
+          return;
+        }
+
+        var v = new Voice({ context: this.context });
+        v.play(this.nextNoteTime);
+        this.nextNoteTime += this.secondsPerBeat;
+        // indicator を表示すべき時間を返す
+        return frameTime + untilNextNote * 1000;
+      }
+    }]);
+
+    return ClickScheduler;
+  }();
+
+  var context = new (window["AudioContext"] || window["webkitAudioContext"])();
+  var clickScheduler = new ClickScheduler({ context: context, bpm: 60 });
 
   var running = false;
   document.querySelector("#toggle").addEventListener("click", function () {
@@ -174,7 +189,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return;
     }
 
-    var r = enqueue(timestamp);
+    var r = clickScheduler.enqueue(timestamp);
     lightScheduler.tick(timestamp, r);
     window.requestAnimationFrame(frame);
   };

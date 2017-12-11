@@ -102,24 +102,30 @@
     }
   }
 
+  class ClickScheduler {
+    constructor(options) {
+      this.context = options.context;
+      this.bpm = options.bpm;
+      this.nextNoteTime = 0;
+      this.secondsPerBeat = 60 / this.bpm;
+    }
+
+    // frameTime は requestAnimationFrame から渡される値で millisecond (double)
+    enqueue(frameTime) {
+      // 25ms 以内に次の音を鳴らすべきなら enqueue
+      const untilNextNote = this.nextNoteTime - this.context.currentTime; // in seconds (double)
+      if (untilNextNote > 0.025) { return; }
+
+      const v = new Voice({context: this.context});
+      v.play(this.nextNoteTime);
+      this.nextNoteTime += this.secondsPerBeat;
+      // indicator を表示すべき時間を返す
+      return frameTime + (untilNextNote * 1000);
+    };
+  }
+
   const context = new (window["AudioContext"] || window["webkitAudioContext"])();
-  const bpm = 60;
-  const queue = [];
-  let nextNoteTime = 0;
-  let secondsPerBeat = 60 / bpm;
-
-  // frameTime は requestAnimationFrame から渡される値で millisecond (double)
-  const enqueue = function(frameTime) {
-    // 25ms 以内に次の音を鳴らすべきなら enqueue
-    const untilNextNote = nextNoteTime - context.currentTime; // in seconds (double)
-    if (untilNextNote > 0.025) { return; }
-
-    const v = new Voice({context: context});
-    v.play(nextNoteTime);
-    nextNoteTime += secondsPerBeat;
-    // indicator を表示すべき時間を返す
-    return frameTime + (untilNextNote * 1000);
-  };
+  const clickScheduler = new ClickScheduler({context: context, bpm: 60});
 
   let running = false;
   document.querySelector("#toggle").addEventListener("click", function() {
@@ -138,7 +144,7 @@
   const frame = function(timestamp) {
     if (!running) { return; }
 
-    const r = enqueue(timestamp);
+    const r = clickScheduler.enqueue(timestamp);
     lightScheduler.tick(timestamp, r);
     window.requestAnimationFrame(frame);
   }
