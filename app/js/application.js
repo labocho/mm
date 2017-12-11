@@ -45,18 +45,29 @@
       this.width = canvas.width;
       this.height = canvas.height;
       this.lit = false;
+      this.lightAt = null;
+      this.duration = 200;
     }
 
-    on() {
+    tick(timestamp) {
+      if (this.lit) {
+        const opacity = 1.0 - (timestamp - this.lightAt) / this.duration;
+
+        this.clear();
+        this.context.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+        this.context.beginPath();
+        this.context.arc(50, 50, 10, 0, 2 * Math.PI);
+        this.context.fill();
+      }
+    }
+
+    on(timestamp) {
+      this.lightAt = timestamp;
       this.lit = true;
-      this.clear();
-      this.context.fillStyle = "#000";
-      this.context.beginPath();
-      this.context.arc(50, 50, 10, 0, 2 * Math.PI);
-      this.context.fill();
     }
 
     off() {
+      this.lightAt = null;
       this.lit = false;
       this.clear();
     }
@@ -78,15 +89,16 @@
         this.nextLightingTime = nextLightingTime;
       }
 
-      if (this.nextLightingTime <= timestamp && timestamp <= this.nextLightingTime + 200) {
+      if (this.nextLightingTime <= timestamp && timestamp <= this.nextLightingTime + this.light.duration) {
         if (!this.light.lit) {
-          light.on();
+          this.light.on(timestamp);
         }
       } else {
         if (this.light.lit) {
           this.light.off();
         }
       }
+      this.light.tick(timestamp);
     }
   }
 
