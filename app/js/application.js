@@ -105,7 +105,7 @@
   class ClickScheduler {
     constructor(options) {
       this.context = options.context;
-      this.bpm = options.bpm;
+      this._bpm = options.bpm;
       this.nextNoteTime = 0;
     }
 
@@ -128,16 +128,52 @@
 
     set bpm(v) {
       this.secondsPerBeat = 60 / v;
+      this._bpm = v;
+    }
+
+    get bpm() {
+      return this._bpm;
+    }
+  }
+
+  class TenKey {
+    constructor(el, options) {
+      this.el = el;
+      this.value = options.value;
+      el.querySelectorAll("[name=numkey]").forEach((numkey) => {
+        numkey.addEventListener("click", this.onClickNumkey.bind(this));
+      });
+    }
+
+    onClickNumkey(e) {
+      const i = window.parseInt(e.target.value, 10);
+      this.value = (this.value * 10 + i) % 1000;
+      console.log(this.value);
+      console.log(this.validValue);
+    }
+
+    get validValue() {
+      if (this.value > 250) {
+        return 250;
+      }
+
+      if (this.value < 20) {
+        return 20;
+      }
+
+      return this.value;
     }
   }
 
   class App {
     constructor() {
       const context = new (window["AudioContext"] || window["webkitAudioContext"])();
-      this.clickScheduler = new ClickScheduler({context: context, bpm: 60});
+      this.clickScheduler = new ClickScheduler({context: context, bpm: this.getBpm()});
 
       const light = new Light(document.querySelector("#light"));
       this.lightScheduler = new LightScheduler(light);
+
+      const tenkey = new TenKey(document.querySelector("#tenkey"), {value: this.clickScheduler.bpm});
 
       this.running = false;
 

@@ -139,7 +139,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _classCallCheck(this, ClickScheduler);
 
       this.context = options.context;
-      this.bpm = options.bpm;
+      this._bpm = options.bpm;
       this.nextNoteTime = 0;
     }
 
@@ -170,10 +170,53 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "bpm",
       set: function set(v) {
         this.secondsPerBeat = 60 / v;
+        this._bpm = v;
+      },
+      get: function get() {
+        return this._bpm;
       }
     }]);
 
     return ClickScheduler;
+  }();
+
+  var TenKey = function () {
+    function TenKey(el, options) {
+      var _this2 = this;
+
+      _classCallCheck(this, TenKey);
+
+      this.el = el;
+      this.value = options.value;
+      el.querySelectorAll("[name=numkey]").forEach(function (numkey) {
+        numkey.addEventListener("click", _this2.onClickNumkey.bind(_this2));
+      });
+    }
+
+    _createClass(TenKey, [{
+      key: "onClickNumkey",
+      value: function onClickNumkey(e) {
+        var i = window.parseInt(e.target.value, 10);
+        this.value = (this.value * 10 + i) % 1000;
+        console.log(this.value);
+        console.log(this.validValue);
+      }
+    }, {
+      key: "validValue",
+      get: function get() {
+        if (this.value > 250) {
+          return 250;
+        }
+
+        if (this.value < 20) {
+          return 20;
+        }
+
+        return this.value;
+      }
+    }]);
+
+    return TenKey;
   }();
 
   var App = function () {
@@ -181,10 +224,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _classCallCheck(this, App);
 
       var context = new (window["AudioContext"] || window["webkitAudioContext"])();
-      this.clickScheduler = new ClickScheduler({ context: context, bpm: 60 });
+      this.clickScheduler = new ClickScheduler({ context: context, bpm: this.getBpm() });
 
       var light = new Light(document.querySelector("#light"));
       this.lightScheduler = new LightScheduler(light);
+
+      var tenkey = new TenKey(document.querySelector("#tenkey"), { value: this.clickScheduler.bpm });
 
       this.running = false;
 
