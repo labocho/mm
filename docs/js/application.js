@@ -251,11 +251,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "tick",
       value: function tick(timestamp) {
-        if (!this.running) {
-          return;
+        var r = null;
+        if (this.running) {
+          r = this.clickScheduler.enqueue(timestamp);
         }
-
-        var r = this.clickScheduler.enqueue(timestamp);
         this.lightScheduler.tick(timestamp, r);
         window.requestAnimationFrame(this.tick.bind(this));
       }

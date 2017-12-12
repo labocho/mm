@@ -192,9 +192,10 @@
     }
 
     tick(timestamp) {
-      if (!this.running) { return; }
-
-      const r = this.clickScheduler.enqueue(timestamp);
+      let r = null;
+      if (this.running) {
+        r = this.clickScheduler.enqueue(timestamp);
+      }
       this.lightScheduler.tick(timestamp, r);
       window.requestAnimationFrame(this.tick.bind(this));
     }
