@@ -1,16 +1,27 @@
 <!doctype html>
+%meta{charset: "utf-8"}
+%meta{content: "width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1, user-scalable=no", name: "viewport"}
 %script{defer: "", src: "js/application.js"}
-%input{name: "bpm", type: "number", value: "120"}/
-%button#toggle Start / Stop
-%canvas#light{height: "64", width: "64"}
-#tenkey.tenkey
-  %button{name: "numkey", value: "0"} 0
-  %button{name: "numkey", value: "1"} 1
-  %button{name: "numkey", value: "2"} 2
-  %button{name: "numkey", value: "3"} 3
-  %button{name: "numkey", value: "4"} 4
-  %button{name: "numkey", value: "5"} 5
-  %button{name: "numkey", value: "6"} 6
-  %button{name: "numkey", value: "7"} 7
-  %button{name: "numkey", value: "8"} 8
-  %button{name: "numkey", value: "9"} 9
+%style
+  = include_file "app/css/application.css"
+.ui
+  .lcd
+    %input{name: "bpm", type: "number", value: "120"}/
+    %canvas#light{height: "64", width: "64"}
+  #tenkey.tenkey
+    .tenkey-row
+      %a.tenkey-key{href: "#", name: "numkey", value: "7"} 7
+      %a.tenkey-key{href: "#", name: "numkey", value: "8"} 8
+      %a.tenkey-key{href: "#", name: "numkey", value: "9"} 9
+    .tenkey-row
+      %a.tenkey-key{href: "#", name: "numkey", value: "4"} 4
+      %a.tenkey-key{href: "#", name: "numkey", value: "5"} 5
+      %a.tenkey-key{href: "#", name: "numkey", value: "6"} 6
+    .tenkey-row
+      %a.tenkey-key{href: "#", name: "numkey", value: "1"} 1
+      %a.tenkey-key{href: "#", name: "numkey", value: "2"} 2
+      %a.tenkey-key{href: "#", name: "numkey", value: "3"} 3
+    .tenkey-row
+      %a.tenkey-key{href: "#", name: "numkey", value: "0"} 0
+      %a.tenkey-key
+      %a.tenkey-key#toggle{href: "#"} ▶

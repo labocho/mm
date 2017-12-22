@@ -204,7 +204,7 @@ class TenKey {
   }
 
   onClickNumkey(e) {
-    const i = window.parseInt(e.target.value, 10);
+    const i = window.parseInt(e.target.innerText, 10);
     this.value = (this.value * 10 + i) % 1000;
 
     Actions.updateDisplayBpm(this.value);

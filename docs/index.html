@@ -1,17 +1,92 @@
 <!doctype html>
+<meta charset='utf-8'>
+<meta content='width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1, user-scalable=no' name='viewport'>
 <script defer='' src='js/application.js'></script>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.ui {
+  display: flex;
+  font-size: 30px;
+  flex-direction: column;
+  height: 100%;
+  max-width: 600px;
+}
+
+.lcd {
+  height: 100px;
+}
+
+.lcd [name=bpm] {
+  font-size: 20px;
+}
+
+.tenkey {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+.tenkey-row {
+  display: flex;
+  flex-grow: 1;
+  border-bottom: 1px solid #000;
+}
+
+.tenkey-row:first-child {
+  border-top: 1px solid #000;
+}
+
+.tenkey-key {
+  align-items: center;
+  border-right: 1px solid #000;
+  color: #000;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  text-decoration: none;
+  width: 33.33%;
+}
+
+.tenkey-key:first-child {
+  border-left: 1px solid #000;
+}
+
+.tenkey-key-wide {
+  flex-grow: 2;
+}
+
+</style>
+<div class='ui'>
+<div class='lcd'>
 <input name='bpm' type='number' value='120'>
-<button id='toggle'>Start / Stop</button>
 <canvas height='64' id='light' width='64'></canvas>
+</div>
 <div class='tenkey' id='tenkey'>
-<button name='numkey' value='0'>0</button>
-<button name='numkey' value='1'>1</button>
-<button name='numkey' value='2'>2</button>
-<button name='numkey' value='3'>3</button>
-<button name='numkey' value='4'>4</button>
-<button name='numkey' value='5'>5</button>
-<button name='numkey' value='6'>6</button>
-<button name='numkey' value='7'>7</button>
-<button name='numkey' value='8'>8</button>
-<button name='numkey' value='9'>9</button>
+<div class='tenkey-row'>
+<a class='tenkey-key' href='#' name='numkey' value='7'>7</a>
+<a class='tenkey-key' href='#' name='numkey' value='8'>8</a>
+<a class='tenkey-key' href='#' name='numkey' value='9'>9</a>
+</div>
+<div class='tenkey-row'>
+<a class='tenkey-key' href='#' name='numkey' value='4'>4</a>
+<a class='tenkey-key' href='#' name='numkey' value='5'>5</a>
+<a class='tenkey-key' href='#' name='numkey' value='6'>6</a>
+</div>
+<div class='tenkey-row'>
+<a class='tenkey-key' href='#' name='numkey' value='1'>1</a>
+<a class='tenkey-key' href='#' name='numkey' value='2'>2</a>
+<a class='tenkey-key' href='#' name='numkey' value='3'>3</a>
+</div>
+<div class='tenkey-row'>
+<a class='tenkey-key' href='#' name='numkey' value='0'>0</a>
+<a class='tenkey-key'></a>
+<a class='tenkey-key' href='#' id='toggle'>▶</a>
+</div>
+</div>
 </div>

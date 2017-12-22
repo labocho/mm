@@ -13,6 +13,8 @@ ARGV.each do |path|
     when ".haml"
       html = path.gsub(/\.haml/, ".html")
       sh "haml -r ./lib/helpers.rb app/#{path.shellescape} > docs/#{html.shellescape}"
+    when ".css"
+      sh "haml -r ./lib/helpers.rb app/index.haml > docs/index.html"
     when ".js"
       sh "webpack"
     else

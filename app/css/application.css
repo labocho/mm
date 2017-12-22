@@ -1,0 +1,57 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.ui {
+  display: flex;
+  font-size: 30px;
+  flex-direction: column;
+  height: 100%;
+  max-width: 600px;
+}
+
+.lcd {
+  height: 100px;
+}
+
+.lcd [name=bpm] {
+  font-size: 20px;
+}
+
+.tenkey {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+.tenkey-row {
+  display: flex;
+  flex-grow: 1;
+  border-bottom: 1px solid #000;
+}
+
+.tenkey-row:first-child {
+  border-top: 1px solid #000;
+}
+
+.tenkey-key {
+  align-items: center;
+  border-right: 1px solid #000;
+  color: #000;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  text-decoration: none;
+  width: 33.33%;
+}
+
+.tenkey-key:first-child {
+  border-left: 1px solid #000;
+}
+
+.tenkey-key-wide {
+  flex-grow: 2;
+}
