@@ -4,57 +4,96 @@
 <script defer='' src='js/application.js'></script>
 <style>
 html, body {
+  background: #333;
+  color: #fff;
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
-.ui {
+.ui-box {
+  align-items: center;
   display: flex;
   font-size: 30px;
-  flex-direction: column;
+  flex-direction: row;
+  margin: auto;
   height: 100%;
-  max-width: 600px;
+}
+
+.ui {
+  display: flex;
+  font-size: 40px;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
 }
 
 .lcd {
-  height: 100px;
+  height: 100%;
+  position: relative;
 }
 
 .lcd [name=bpm] {
-  font-size: 20px;
+  background: inherit;
+  border: none;
+  color: inherit;
+  font-size: 65px;
+  width: 100%;
+  text-align: center;
+}
+
+#light {
+  position: absolute;
+  right: 12%;
+  top: calc(50% - 18px);
 }
 
 .tenkey {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  font-size: 60px;
   max-width: 100%;
 }
 
-.tenkey-row {
+.row {
   display: flex;
   flex-grow: 1;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid #888;
 }
 
-.tenkey-row:first-child {
-  border-top: 1px solid #000;
+.row:first-child {
+  border-top: 1px solid #888;
 }
+
 
 .tenkey-key {
   align-items: center;
-  border-right: 1px solid #000;
-  color: #000;
-  display: flex;
-  flex-grow: 1;
+  color: inherit;
   justify-content: center;
   text-decoration: none;
+}
+
+.col-4 {
+  border-right: 1px solid #888;
+  display: flex;
+  flex-grow: 1;
   width: 33.33%;
 }
 
-.tenkey-key:first-child {
-  border-left: 1px solid #000;
+.col-12 {
+  border-right: 1px solid #888;
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.col-4:first-child {
+  border-left: 1px solid #888;
+}
+
+.col-12:first-child {
+  border-left: 1px solid #888;
 }
 
 .tenkey-key-wide {
@@ -62,31 +101,33 @@ html, body {
 }
 
 </style>
-<div class='ui'>
-<div class='lcd'>
+<div class='ui-box'>
+<div class='ui' id='tenkey'>
+<div class='row' style='height: 24%'>
+<div class='lcd col-12'>
 <input name='bpm' type='number' value='120'>
-<canvas height='64' id='light' width='64'></canvas>
+<canvas height='36' id='light' width='36'></canvas>
 </div>
-<div class='tenkey' id='tenkey'>
-<div class='tenkey-row'>
-<a class='tenkey-key' href='#' name='numkey' value='7'>7</a>
-<a class='tenkey-key' href='#' name='numkey' value='8'>8</a>
-<a class='tenkey-key' href='#' name='numkey' value='9'>9</a>
 </div>
-<div class='tenkey-row'>
-<a class='tenkey-key' href='#' name='numkey' value='4'>4</a>
-<a class='tenkey-key' href='#' name='numkey' value='5'>5</a>
-<a class='tenkey-key' href='#' name='numkey' value='6'>6</a>
+<div class='row' style='height: 19%'>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='7'>7</a>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='8'>8</a>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='9'>9</a>
 </div>
-<div class='tenkey-row'>
-<a class='tenkey-key' href='#' name='numkey' value='1'>1</a>
-<a class='tenkey-key' href='#' name='numkey' value='2'>2</a>
-<a class='tenkey-key' href='#' name='numkey' value='3'>3</a>
+<div class='row' style='height: 19%'>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='4'>4</a>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='5'>5</a>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='6'>6</a>
 </div>
-<div class='tenkey-row'>
-<a class='tenkey-key' href='#' name='numkey' value='0'>0</a>
-<a class='tenkey-key'></a>
-<a class='tenkey-key' href='#' id='toggle'>▶</a>
+<div class='row' style='height: 19%'>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='1'>1</a>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='2'>2</a>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='3'>3</a>
+</div>
+<div class='row' style='height: 19%'>
+<a class='col-4 tenkey-key' href='#' name='numkey' value='0'>0</a>
+<a class='col-4 tenkey-key'></a>
+<a class='col-4 tenkey-key' href='#' id='toggle'>▶</a>
 </div>
 </div>
 </div>

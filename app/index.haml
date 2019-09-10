@@ -4,24 +4,25 @@
 %script{defer: "", src: "js/application.js"}
 %style
   = include_file "app/css/application.css"
-.ui
-  .lcd
-    %input{name: "bpm", type: "number", value: "120"}/
-    %canvas#light{height: "64", width: "64"}
-  #tenkey.tenkey
-    .tenkey-row
-      %a.tenkey-key{href: "#", name: "numkey", value: "7"} 7
-      %a.tenkey-key{href: "#", name: "numkey", value: "8"} 8
-      %a.tenkey-key{href: "#", name: "numkey", value: "9"} 9
-    .tenkey-row
-      %a.tenkey-key{href: "#", name: "numkey", value: "4"} 4
-      %a.tenkey-key{href: "#", name: "numkey", value: "5"} 5
-      %a.tenkey-key{href: "#", name: "numkey", value: "6"} 6
-    .tenkey-row
-      %a.tenkey-key{href: "#", name: "numkey", value: "1"} 1
-      %a.tenkey-key{href: "#", name: "numkey", value: "2"} 2
-      %a.tenkey-key{href: "#", name: "numkey", value: "3"} 3
-    .tenkey-row
-      %a.tenkey-key{href: "#", name: "numkey", value: "0"} 0
-      %a.tenkey-key
-      %a.tenkey-key#toggle{href: "#"} ▶
+.ui-box
+  .ui#tenkey
+    .row{style: "height: 24%"}
+      .lcd.col-12
+        %input{name: "bpm", type: "number", value: "120"}/
+        %canvas#light{height: "36", width: "36"}
+    .row{style: "height: 19%"}
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "7"} 7
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "8"} 8
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "9"} 9
+    .row{style: "height: 19%"}
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "4"} 4
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "5"} 5
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "6"} 6
+    .row{style: "height: 19%"}
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "1"} 1
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "2"} 2
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "3"} 3
+    .row{style: "height: 19%"}
+      %a.col-4.tenkey-key{href: "#", name: "numkey", value: "0"} 0
+      %a.col-4.tenkey-key
+      %a.col-4.tenkey-key#toggle{href: "#"} ▶

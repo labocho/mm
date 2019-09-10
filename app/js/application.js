@@ -112,9 +112,9 @@ class Light {
       const opacity = 1.0 - (timestamp - this.lightAt) / this.duration;
 
       this.clear();
-      this.context.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+      this.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
       this.context.beginPath();
-      this.context.arc(50, 50, 10, 0, 2 * Math.PI);
+      this.context.arc(this.width / 2, this.height / 2, this.width / 2, 0, 2 * Math.PI);
       this.context.fill();
     }
   }
@@ -131,8 +131,7 @@ class Light {
   }
 
   clear() {
-    this.context.fillStyle = "#fff";
-    this.context.fillRect(0, 0, this.width, this.height);
+    this.context.clearRect(0, 0, this.width, this.height);
   }
 }
 
