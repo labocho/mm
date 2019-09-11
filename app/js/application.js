@@ -181,7 +181,7 @@ class ClickScheduler {
 
   clickNow() {
     this.nextNoteTime = this.context.currentTime;
-    // Safari では click イベントで同期的にサウンドを再生しないと AudioCocontext.state が suspended になり、AudioContext.currentTime が 0 になるので、volume 0 で再生
+    // Safari では touchstart イベントで同期的にサウンドを再生しないと AudioCocontext.state が suspended になり、AudioContext.currentTime が 0 になるので、volume 0 で再生
     // https://qiita.com/pentamania/items/2c568a9ec52148bbfd08
     const v = new Voice({ context: this.context, volume: 0 });
     v.play(this.nextNoteTime);
@@ -202,7 +202,7 @@ class TenKey {
     this.el = el;
     this.value = options.value;
     el.querySelectorAll("[name=numkey]").forEach((numkey) => {
-      numkey.addEventListener("click", this.onClickNumkey.bind(this));
+      numkey.addEventListener("touchstart", this.onClickNumkey.bind(this));
     });
   }
 
@@ -251,7 +251,7 @@ class App {
       document.querySelector("[name=bpm]").value = s;
     });
 
-    document.querySelector("#toggle").addEventListener("click", this.toggle.bind(this));
+    document.querySelector("#toggle").addEventListener("touchstart", this.toggle.bind(this));
   }
 
   toggle() {
