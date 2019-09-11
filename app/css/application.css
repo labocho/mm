@@ -68,6 +68,13 @@ html, body {
   color: inherit;
   justify-content: center;
   text-decoration: none;
+  transition-property: background;
+  transition-duration: 0.2s;
+}
+
+.tenkey-key:active {
+  background: #888;
+  transition-duration: 0;
 }
 
 .col-4 {

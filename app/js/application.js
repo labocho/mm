@@ -93,7 +93,7 @@ class Voice {
 Voice.DEFAULT_VALUES = {
   volume: 0.7,
   frequency: 880,
-  attack: 0.01,
+  attack: 0.005,
   release: 0.1,
 };
 
@@ -164,6 +164,7 @@ class ClickScheduler {
     this.context = options.context;
     this._bpm = options.bpm;
     this.nextNoteTime = 0;
+    this.voice = new Voice({ context: this.context });
   }
 
   // frameTime は requestAnimationFrame から渡される値で millisecond (double)
@@ -172,8 +173,7 @@ class ClickScheduler {
     const untilNextNote = this.nextNoteTime - this.context.currentTime; // in seconds (double)
     if (untilNextNote > 0.025) { return; }
 
-    const v = new Voice({context: this.context});
-    v.play(this.nextNoteTime);
+    this.voice.play(this.nextNoteTime);
     this.nextNoteTime += this.secondsPerBeat;
     // indicator を表示すべき時間を返す
     return frameTime + (untilNextNote * 1000);
@@ -181,6 +181,10 @@ class ClickScheduler {
 
   clickNow() {
     this.nextNoteTime = this.context.currentTime;
+    // Safari では click イベントで同期的にサウンドを再生しないと AudioCocontext.state が suspended になり、AudioContext.currentTime が 0 になるので、volume 0 で再生
+    // https://qiita.com/pentamania/items/2c568a9ec52148bbfd08
+    const v = new Voice({ context: this.context, volume: 0 });
+    v.play(this.nextNoteTime);
   }
 
   set bpm(v) {
