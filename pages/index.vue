@@ -1,3 +1,39 @@
+<template>
+  <div class="ui-box">
+    <link rel="stylesheet" href="/application.css"></link>
+    <div id="tenkey" class="ui">
+      <div class="row" style="height: 24%">
+        <div class="lcd col-12">
+          <input name="bpm" type="number" value="120"></input>
+          <canvas id="light" height="36" width="36" />
+        </div>
+      </div>
+      <div class="row" style="height: 19%">
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="7">7</a>
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="8">8</a>
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="9">9</a>
+      </div>
+      <div class="row" style="height: 19%">
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="4">4</a>
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="5">5</a>
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="6">6</a>
+      </div>
+      <div class="row" style="height: 19%">
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="1">1</a>
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="2">2</a>
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="3">3</a>
+      </div>
+      <div class="row" style="height: 19%">
+        <a class="col-4 tenkey-key" href="#" name="numkey" value="0">0</a>
+        <a class="col-4 tenkey-key" />
+        <a id="toggle" class="col-4 tenkey-key" href="#">▶</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+
 import { createStore } from "redux";
 
 const initialState = {
@@ -31,9 +67,7 @@ const Actions = {
   updateBpm(bpm) {
     store.dispatch({
       type: "updateBpm",
-      payload: {
-        bpm: bpm,
-      },
+      payload: { bpm },
     });
   },
   updateDisplayBpm(bpm) {
@@ -82,7 +116,7 @@ class Voice {
     this.osc.start(now);
 
     this.gain.gain.linearRampToValueAtTime(0, now + this.attack + this.release);
-    this.osc.addEventListener("ended", ()=> {
+    this.osc.addEventListener("ended", () => {
       this.gain.disconnect(this.context);
     });
 
@@ -150,10 +184,8 @@ class LightScheduler {
       if (!this.light.lit) {
         this.light.on(timestamp);
       }
-    } else {
-      if (this.light.lit) {
-        this.light.off();
-      }
+    } else if (this.light.lit) {
+      this.light.off();
     }
     this.light.tick(timestamp);
   }
@@ -207,7 +239,7 @@ class TenKey {
   }
 
   onClickNumkey(e) {
-    const i = window.parseInt(e.target.innerText, 10);
+    const i = window.parseInt(e.target.textContent, 10);
     this.value = (this.value * 10 + i) % 1000;
 
     Actions.updateDisplayBpm(this.value);
@@ -229,8 +261,8 @@ class TenKey {
 
 class App {
   constructor() {
-    const context = new (window["AudioContext"] || window["webkitAudioContext"])();
-    this.clickScheduler = new ClickScheduler({context: context, bpm: store.getState().bpm});
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    this.clickScheduler = new ClickScheduler({ context, bpm: store.getState().bpm });
     store.subscribe(() => {
       this.clickScheduler.bpm = store.getState().bpm;
     });
@@ -238,7 +270,7 @@ class App {
     const light = new Light(document.querySelector("#light"));
     this.lightScheduler = new LightScheduler(light);
 
-    const tenkey = new TenKey(document.querySelector("#tenkey"), {value: store.getState().displayBpm});
+    const tenkey = new TenKey(document.querySelector("#tenkey"), { value: store.getState().displayBpm });
     store.subscribe(() => {
       tenkey.value = store.getState().displayBpm;
     });
@@ -272,4 +304,12 @@ class App {
   }
 }
 
-new App();
+export default {
+  mounted() {
+    this.app = new App();
+  },
+}
+</script>
+
+<style>
+</style>
