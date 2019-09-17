@@ -34,63 +34,6 @@
 
 <script>
 
-import { createStore } from "redux";
-
-const initialState = {
-  bpm: 60,
-  displayBpm: 60,
-  running: false,
-};
-
-const reducer = function(state = initialState, action) {
-  switch (action.type) {
-    case "updateDisplayBpm":
-      return Object.assign({}, state, {
-        displayBpm: action.payload.displayBpm,
-      });
-    case "updateBpm":
-      return Object.assign({}, state, {
-        bpm: action.payload.bpm,
-      });
-    case "toggle":
-      return Object.assign({}, state, {
-        running: !state.running,
-        displayBpm: state.bpm,
-      });
-    default:
-      return state;
-  }
-}
-const store = createStore(reducer);
-
-const Actions = {
-  updateBpm(bpm) {
-    store.dispatch({
-      type: "updateBpm",
-      payload: { bpm },
-    });
-  },
-  updateDisplayBpm(bpm) {
-    store.dispatch({
-      type: "updateDisplayBpm",
-      payload: {
-        displayBpm: bpm,
-      },
-    });
-  },
-  toggle(bpm) {
-    store.dispatch({
-      type: "toggle",
-      payload: {},
-    });
-  },
-};
-
-console.log(store.getState());
-store.subscribe(() => {
-  console.log(store.getState());
-})
-
 class Voice {
   constructor(props) {
     this.context = props.context;
@@ -230,9 +173,10 @@ class ClickScheduler {
 }
 
 class TenKey {
-  constructor(el, options) {
+  constructor(el, { store, value }) {
     this.el = el;
-    this.value = options.value;
+    this.value = value;
+    this.store = store;
     el.querySelectorAll("[name=numkey]").forEach((numkey) => {
       numkey.addEventListener("touchstart", this.onClickNumkey.bind(this));
     });
@@ -242,8 +186,8 @@ class TenKey {
     const i = window.parseInt(e.target.textContent, 10);
     this.value = (this.value * 10 + i) % 1000;
 
-    Actions.updateDisplayBpm(this.value);
-    Actions.updateBpm(this.validValue);
+    this.store.commit("updateDisplayBpm", this.value);
+    this.store.commit("updateBpm", this.validValue);
   }
 
   get validValue() {
@@ -260,23 +204,24 @@ class TenKey {
 }
 
 class App {
-  constructor() {
+  constructor(store) {
+    this.store = store;
     const context = new (window.AudioContext || window.webkitAudioContext)();
-    this.clickScheduler = new ClickScheduler({ context, bpm: store.getState().bpm });
+    this.clickScheduler = new ClickScheduler({ context, bpm: store.state.bpm });
     store.subscribe(() => {
-      this.clickScheduler.bpm = store.getState().bpm;
+      this.clickScheduler.bpm = store.state.bpm;
     });
 
     const light = new Light(document.querySelector("#light"));
     this.lightScheduler = new LightScheduler(light);
 
-    const tenkey = new TenKey(document.querySelector("#tenkey"), { value: store.getState().displayBpm });
+    const tenkey = new TenKey(document.querySelector("#tenkey"), { store, value: store.state.displayBpm });
     store.subscribe(() => {
-      tenkey.value = store.getState().displayBpm;
+      tenkey.value = store.state.displayBpm;
     });
 
     store.subscribe(() => {
-      let s = store.getState().displayBpm.toString();
+      let s = store.state.displayBpm.toString();
       while (s.length < 3) {
         s = "0" + s;
       }
@@ -287,8 +232,8 @@ class App {
   }
 
   toggle() {
-    Actions.toggle();
-    if (store.getState().running) {
+    this.store.commit("toggle");
+    if (this.store.state.running) {
       this.clickScheduler.clickNow();
       window.requestAnimationFrame(this.tick.bind(this));
     }
@@ -296,7 +241,7 @@ class App {
 
   tick(timestamp) {
     let r = null;
-    if (store.getState().running) {
+    if (this.store.state.running) {
       r = this.clickScheduler.enqueue(timestamp);
     }
     this.lightScheduler.tick(timestamp, r);
@@ -306,7 +251,7 @@ class App {
 
 export default {
   mounted() {
-    this.app = new App();
+    this.app = new App(this.$store);
   },
 }
 </script>
