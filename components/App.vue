@@ -4,7 +4,7 @@
     <div id="tenkey" class="ui">
       <div class="row" style="height: 24%">
         <div class="lcd col-12">
-          <input name="bpm" type="number" :value="bpmText"></input>
+          <input name="bpm" type="number" :value="bpmText" :style="bpmStyle"></input>
           <canvas id="light" ref="light" height="36" width="36" />
         </div>
       </div>
@@ -22,12 +22,20 @@ export default {
     TenKey,
   },
   computed: {
+    bpmStyle() {
+      return {
+        opacity: this.isBpmValid ? 1.0 : 0.5,
+      }
+    },
     bpmText() {
       let s = this.$store.state.displayBpm.toString();
       while (s.length < 3) {
         s = "0" + s;
       }
       return s;
+    },
+    isBpmValid() {
+      return this.$store.getters.isBpmValid;
     },
   },
   mounted() {

@@ -22,6 +22,12 @@ export const state = () => ({
   running: false,
 })
 
+export const getters = {
+  isBpmValid(state: State) {
+    return state.bpm === state.displayBpm;
+  }
+}
+
 export const mutations = {
   updateBpm(state: State, bpm: number) {
     state.bpm = bpm;
@@ -39,12 +45,13 @@ export const actions = {
   setLight({ commit }: any, light: Light) {
     lightScheduler = new LightScheduler(light);
   },
-  updateBpm({ commit, state }: any, bpm: number) {
-    commit("updateBpm", bpm);
-    clickScheduler.bpm = bpm;
-  },
   updateDisplayBpm({ commit }: any, bpm: number) {
     commit("updateDisplayBpm", bpm);
+
+    if (30 <= bpm && bpm < 300) {
+      commit("updateBpm", bpm);
+      clickScheduler.bpm = bpm;
+    }
   },
   toggle({ commit, state, dispatch }: any) {
     commit("toggle");

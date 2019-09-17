@@ -53,9 +53,7 @@ export default {
   methods: {
     onClickNumkey(i) {
       this.value = (this.value * 10 + i) % 1000;
-
       this.$store.dispatch("updateDisplayBpm", this.value);
-      this.$store.dispatch("updateBpm", this.validValue);
     },
     onClickToggle() {
       this.$store.dispatch("toggle");
