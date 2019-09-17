@@ -1,6 +1,17 @@
 class Light {
-  constructor(canvas) {
-    this.context = canvas.getContext("2d");
+  public lit: boolean;
+  public duration: number;
+  private context: CanvasRenderingContext2D;
+  private width: number;
+  private height: number;
+  private lightAt: number | null;
+
+  constructor(canvas: HTMLCanvasElement) {
+    const context = canvas.getContext("2d");
+    if (context === null) {
+      throw "Cannot get canvas context";
+    }
+    this.context = context;
     this.width = canvas.width;
     this.height = canvas.height;
     this.lit = false;
@@ -8,8 +19,8 @@ class Light {
     this.duration = 200;
   }
 
-  tick(timestamp) {
-    if (this.lit) {
+  tick(timestamp: number): void {
+    if (this.lit && this.lightAt) {
       const opacity = 1.0 - (timestamp - this.lightAt) / this.duration;
 
       this.clear();
@@ -20,18 +31,18 @@ class Light {
     }
   }
 
-  on(timestamp) {
+  on(timestamp: number): void {
     this.lightAt = timestamp;
     this.lit = true;
   }
 
-  off() {
+  off(): void {
     this.lightAt = null;
     this.lit = false;
     this.clear();
   }
 
-  clear() {
+  clear(): void {
     this.context.clearRect(0, 0, this.width, this.height);
   }
 }

@@ -1,10 +1,15 @@
+import Light from "./Light";
+
 class LightScheduler {
-  constructor(light) {
+  private light: Light;
+  private nextLightingTime: number;
+
+  constructor(light: Light) {
     this.light = light;
     this.nextLightingTime = 0;
   }
 
-  tick(timestamp, nextLightingTime) {
+  tick(timestamp: number, nextLightingTime: number | null): void {
     if (nextLightingTime) {
       this.nextLightingTime = nextLightingTime;
     }
