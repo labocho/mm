@@ -1,9 +1,20 @@
 import ClickScheduler from "~/lib/ClickScheduler";
+import Light from "~/lib/Light";
 import LightScheduler from "~/lib/LightScheduler";
 
-const context = new (window.AudioContext || window.webkitAudioContext)()
+interface SafariWindow {
+  webkitAudioContext: AudioContext;
+}
+
+const context = new (window.AudioContext || (<SafariWindow><unknown>window).webkitAudioContext)()
 const clickScheduler = new ClickScheduler({ context, bpm: 60 });
-let lightScheduler = null;
+let lightScheduler: LightScheduler | null = null;
+
+interface State {
+  bpm: number;
+  displayBpm: number;
+  running: boolean;
+}
 
 export const state = () => ({
   bpm: 60,
@@ -12,39 +23,39 @@ export const state = () => ({
 })
 
 export const mutations = {
-  updateBpm(state, bpm) {
+  updateBpm(state: State, bpm: number) {
     state.bpm = bpm;
   },
-  updateDisplayBpm(state, bpm) {
+  updateDisplayBpm(state: State, bpm: number) {
     state.displayBpm = bpm;
   },
-  toggle(state) {
+  toggle(state: State) {
     state.running = !state.running;
     state.displayBpm = state.bpm;
   },
 }
 
 export const actions = {
-  setLight({ commit }, light) {
+  setLight({ commit }: any, light: Light) {
     lightScheduler = new LightScheduler(light);
   },
-  updateBpm({ commit, state }, bpm) {
+  updateBpm({ commit, state }: any, bpm: number) {
     commit("updateBpm", bpm);
     clickScheduler.bpm = bpm;
   },
-  updateDisplayBpm({ commit }, bpm) {
+  updateDisplayBpm({ commit }: any, bpm: number) {
     commit("updateDisplayBpm", bpm);
   },
-  toggle({ commit, state, dispatch }) {
+  toggle({ commit, state, dispatch }: any) {
     commit("toggle");
     if (state.running) {
       clickScheduler.clickNow();
-      window.requestAnimationFrame((timestamp) => {
+      window.requestAnimationFrame((timestamp: number) => {
         dispatch("tick", timestamp)
       });
     }
   },
-  tick({ state, dispatch }, timestamp) {
+  tick({ state, dispatch }: any, timestamp: number) {
     let r = null;
     if (state.running) {
       r = clickScheduler.enqueue(timestamp);
@@ -52,7 +63,7 @@ export const actions = {
     if (lightScheduler) {
       lightScheduler.tick(timestamp, r);
     }
-    window.requestAnimationFrame((timestamp) => {
+    window.requestAnimationFrame((timestamp: number) => {
       dispatch("tick", timestamp)
     });
   },
