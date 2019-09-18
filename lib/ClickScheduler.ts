@@ -31,7 +31,7 @@ class ClickScheduler {
     this.nextNoteTime = this.context.currentTime;
     // Safari では touchstart イベントで同期的にサウンドを再生しないと AudioCocontext.state が suspended になり、AudioContext.currentTime が 0 になるので、volume 0 で再生
     // https://qiita.com/pentamania/items/2c568a9ec52148bbfd08
-    const v = new Voice({ context: this.context, volume: 0 });
+    const v = new Voice({ context: this.context, volume: 0.0001 });
     v.play();
   }
 
