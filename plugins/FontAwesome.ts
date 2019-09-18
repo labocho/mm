@@ -1,8 +1,9 @@
 import Vue from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import { faCircle, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
+library.add(faCircle);
 library.add(faPlay);
 library.add(faPause);
 

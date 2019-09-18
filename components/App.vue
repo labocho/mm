@@ -5,7 +5,7 @@
       <div class="row" style="height: 24%">
         <div class="lcd col-12">
           <input name="bpm" type="number" :value="bpmText" :style="bpmStyle"></input>
-          <canvas id="light" ref="light" height="36" width="36" />
+          <font-awesome-icon icon="circle" ref="light" id="light" :style="{display: isRunning ? 'inline' : 'none'}" />
         </div>
       </div>
       <TenKey :initial-value="this.$store.state.displayBpm" style="height: 76%" />
@@ -22,6 +22,9 @@ export default {
     TenKey,
   },
   computed: {
+    isRunning() {
+      return this.$store.state.running;
+    },
     bpmStyle() {
       return {
         opacity: this.isBpmValid ? 1.0 : 0.5,

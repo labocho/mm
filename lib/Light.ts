@@ -1,19 +1,11 @@
 class Light {
   public lit: boolean;
   public duration: number;
-  private context: CanvasRenderingContext2D;
-  private width: number;
-  private height: number;
+  private el: HTMLElement;
   private lightAt: number | null;
 
-  constructor(canvas: HTMLCanvasElement) {
-    const context = canvas.getContext("2d");
-    if (context === null) {
-      throw "Cannot get canvas context";
-    }
-    this.context = context;
-    this.width = canvas.width;
-    this.height = canvas.height;
+  constructor(el: HTMLElement) {
+    this.el = el;
     this.lit = false;
     this.lightAt = null;
     this.duration = 200;
@@ -22,12 +14,10 @@ class Light {
   tick(timestamp: number): void {
     if (this.lit && this.lightAt) {
       const opacity = 1.0 - (timestamp - this.lightAt) / this.duration;
-
-      this.clear();
-      this.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-      this.context.beginPath();
-      this.context.arc(this.width / 2, this.height / 2, this.width / 2, 0, 2 * Math.PI);
-      this.context.fill();
+      if (opacity < 0.8) {
+        // debugger
+      }
+      this.el.style.opacity = opacity.toString();
     }
   }
 
@@ -43,7 +33,7 @@ class Light {
   }
 
   clear(): void {
-    this.context.clearRect(0, 0, this.width, this.height);
+    this.el.style.opacity = "0";
   }
 }
 
