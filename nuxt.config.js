@@ -57,4 +57,7 @@ export default {
   generate: {
     dir: "docs",
   },
+  server: {
+    host: "0.0.0.0",
+  },
 }
