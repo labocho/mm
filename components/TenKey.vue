@@ -16,7 +16,8 @@
       a.col-3.tenkey-key(@touchstart.prevent="onTapNumkey(1)" @mousedown.prevent="onTapNumkey(1)") 1
       a.col-3.tenkey-key(@touchstart.prevent="onTapNumkey(2)" @mousedown.prevent="onTapNumkey(2)") 2
       a.col-3.tenkey-key(@touchstart.prevent="onTapNumkey(3)" @mousedown.prevent="onTapNumkey(3)") 3
-      a.col-3.tenkey-key
+      a.col-3.tenkey-key(:class="{active: $store.state.tapBegin !== null}" style="font-size: 50%;" @touchstart.prevent="onTapTapkey" @mousedown.prevent="onTapTapkey")
+        | TAP
     .row(style="height: 25%")
       a.col-3.tenkey-key(@touchstart.prevent="onTapNumkey(0)" @mousedown.prevent="onTapNumkey(0)") 0
       a.col-3.tenkey-key
@@ -58,6 +59,9 @@ export default {
     onTapNumkey(i) {
       this.value = (this.value * 10 + i) % 1000;
       this.$store.dispatch("updateDisplayBpm", this.value);
+    },
+    onTapTapkey() {
+      this.$store.dispatch("tap", new Date().getTime());
     },
     onTapToggle() {
       this.$store.dispatch("toggle");

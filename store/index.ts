@@ -1,6 +1,7 @@
 import ClickScheduler from "~/lib/ClickScheduler";
 import Light from "~/lib/Light";
 import LightScheduler from "~/lib/LightScheduler";
+import { templateLiteral } from "@babel/types";
 
 interface SafariWindow {
   webkitAudioContext: AudioContext;
@@ -14,12 +15,16 @@ interface State {
   bpm: number;
   displayBpm: number;
   running: boolean;
+  tapBegin: number | null;
+  tapTimeoutTimer: number | null;
 }
 
 export const state = () => ({
   bpm: 60,
   displayBpm: 60,
   running: false,
+  tapBegin: null,
+  tapTimeoutTimer: null,
 })
 
 export const getters = {
@@ -34,6 +39,15 @@ export const mutations = {
   },
   updateDisplayBpm(state: State, bpm: number) {
     state.displayBpm = bpm;
+  },
+  updateTapBegin(state: State, timestamp: number | null) {
+    state.tapBegin = timestamp;
+  },
+  updateTapTimeoutTimer(state: State, timer: number | null) {
+    if (state.tapTimeoutTimer !== null) {
+      window.clearTimeout(state.tapTimeoutTimer);
+    }
+    state.tapTimeoutTimer = timer;
   },
   toggle(state: State) {
     state.running = !state.running;
@@ -74,4 +88,20 @@ export const actions = {
       dispatch("tick", timestamp)
     });
   },
+  tap({ commit, dispatch, state }: any, timestamp: number) {
+    if (state.tapBegin === null) {
+      const timer = window.setTimeout(() => {
+        commit("updateTapBegin", null);
+      }, 2000); // 30bpm まで待つ
+
+      commit("updateTapBegin", timestamp);
+      commit("updateTapTimeoutTimer", timer);
+    } else {
+      const bpm = 1 / ((timestamp - state.tapBegin) / 1000 / 60);
+
+      commit("updateTapBegin", null);
+      commit("updateTapTimeoutTimer", null);
+      dispatch("updateDisplayBpm", Math.round(bpm % 1000));
+    }
+  }
 }

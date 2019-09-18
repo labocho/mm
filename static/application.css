@@ -82,6 +82,11 @@ html, body {
   transition-duration: 0;
 }
 
+.tenkey-key.active {
+  background: #fff;
+  color: #333;
+}
+
 .col-4 {
   border-right: 0.5px solid #888;
   display: flex;
