@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     onTapAdd(i) {
-      const n = (this.$store.state.displayBpm + 1) % 1000;
+      const n = (this.$store.state.displayBpm + i) % 1000;
       this.$store.dispatch("updateDisplayBpm", n);
     },
     onTapNumkey(i) {
