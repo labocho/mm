@@ -14,6 +14,7 @@ let lightScheduler: LightScheduler | null = null;
 interface State {
   bpm: number;
   displayBpm: number;
+  numKeyTimeoutTimer: number | null;
   running: boolean;
   tapBegin: number | null;
   tapTimeoutTimer: number | null;
@@ -22,6 +23,7 @@ interface State {
 export const state = () => ({
   bpm: 60,
   displayBpm: 60,
+  numKeyTimeoutTimer: null,
   running: false,
   tapBegin: null,
   tapTimeoutTimer: null,
@@ -39,6 +41,9 @@ export const mutations = {
   },
   updateDisplayBpm(state: State, bpm: number) {
     state.displayBpm = bpm;
+  },
+  updateNumKeyTimeoutTimer(state: State, timer: number | null) {
+    state.numKeyTimeoutTimer = timer;
   },
   updateTapBegin(state: State, timestamp: number | null) {
     state.tapBegin = timestamp;
@@ -103,5 +108,15 @@ export const actions = {
       commit("updateTapTimeoutTimer", null);
       dispatch("updateDisplayBpm", Math.round(bpm % 1000));
     }
-  }
+  },
+  numkeyTapped({ commit, state }: any, timestamp: number) {
+    if (state.numKeyTimeoutTimer !== null) {
+      clearTimeout(state.numKeyTimeoutTimer);
+    }
+
+    const timer = setTimeout(() => {
+      commit("updateNumKeyTimeoutTimer", null);
+    }, 2000);
+    commit("updateNumKeyTimeoutTimer", timer);
+  },
 }

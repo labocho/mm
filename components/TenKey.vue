@@ -57,7 +57,13 @@ export default {
       this.$store.dispatch("updateDisplayBpm", this.value);
     },
     onTapNumkey(i) {
-      this.value = (this.value * 10 + i) % 1000;
+      if (this.$store.state.numKeyTimeoutTimer === null) {
+        this.value = i;
+      } else {
+        this.value = (this.value * 10 + i) % 1000;
+      }
+
+      this.$store.dispatch("numkeyTapped", new Date().getTime());
       this.$store.dispatch("updateDisplayBpm", this.value);
     },
     onTapTapkey() {
