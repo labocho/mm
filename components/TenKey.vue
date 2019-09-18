@@ -1,24 +1,24 @@
 <template>
   <div>
     <div class="row" style="height: 25%">
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(7)">7</a>
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(8)">8</a>
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(9)">9</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(7)" @mousedown.prevent="onTapNumkey(7)" >7</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(8)" @mousedown.prevent="onTapNumkey(8)" >8</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(9)" @mousedown.prevent="onTapNumkey(9)" >9</a>
     </div>
     <div class="row" style="height: 25%">
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(4)">4</a>
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(5)">5</a>
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(6)">6</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(4)" @mousedown.prevent="onTapNumkey(4)" >4</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(5)" @mousedown.prevent="onTapNumkey(5)" >5</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(6)" @mousedown.prevent="onTapNumkey(6)" >6</a>
     </div>
     <div class="row" style="height: 25%">
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(1)">1</a>
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(2)">2</a>
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(3)">3</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(1)" @mousedown.prevent="onTapNumkey(1)" >1</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(2)" @mousedown.prevent="onTapNumkey(2)" >2</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(3)" @mousedown.prevent="onTapNumkey(3)" >3</a>
     </div>
     <div class="row" style="height: 25%">
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(0)">0</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapNumkey(0)" @mousedown.prevent="onTapNumkey(0)" >0</a>
       <a class="col-4 tenkey-key" />
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickToggle">
+      <a class="col-4 tenkey-key" @touchstart.prevent="onTapToggle" @mousedown.prevent="onTapToggle">
         <font-awesome-icon v-if="!isRunning" icon="play" />
         <font-awesome-icon v-if="isRunning" icon="pause" />
       </a>
@@ -57,11 +57,11 @@ export default {
     },
   },
   methods: {
-    onClickNumkey(i) {
+    onTapNumkey(i) {
       this.value = (this.value * 10 + i) % 1000;
       this.$store.dispatch("updateDisplayBpm", this.value);
     },
-    onClickToggle() {
+    onTapToggle() {
       this.$store.dispatch("toggle");
     },
   },
