@@ -19,8 +19,8 @@
       <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(0)">0</a>
       <a class="col-4 tenkey-key" />
       <a class="col-4 tenkey-key" @touchstart.prevent="onClickToggle">
-        <font-awesome-icon icon="play" v-if="!isRunning" />
-        <font-awesome-icon icon="pause" v-if="isRunning" />
+        <font-awesome-icon v-if="!isRunning" icon="play" />
+        <font-awesome-icon v-if="isRunning" icon="pause" />
       </a>
     </div>
   </div>

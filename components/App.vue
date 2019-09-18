@@ -5,7 +5,7 @@
       <div class="row" style="height: 24%">
         <div class="lcd col-12">
           <input name="bpm" type="number" :value="bpmText" :style="bpmStyle"></input>
-          <font-awesome-icon icon="circle" ref="light" id="light" :style="{display: isRunning ? 'inline' : 'none'}" />
+          <font-awesome-icon id="light" ref="light" icon="circle" :style="{display: isRunning ? 'inline' : 'none'}" />
         </div>
       </div>
       <TenKey :initial-value="this.$store.state.displayBpm" style="height: 76%" />
