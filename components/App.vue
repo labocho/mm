@@ -4,7 +4,7 @@
     #tenkey.ui
       .row(style="height: 40%")
         .lcd.col-12
-          input(name="bpm", type="number", :value="bpmText", :style="bpmStyle")
+          input(name="bpm", type="number", :value="bpmText", :style="bpmStyle" readonly)
           font-awesome-icon#light(ref="light", icon="circle", :style="{display: isRunning ? 'inline' : 'none'}")
       TenKey(style="height: 60%")
 </template>
