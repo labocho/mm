@@ -1,12 +1,13 @@
 import ClickScheduler from "~/lib/ClickScheduler";
 import Light from "~/lib/Light";
 import LightScheduler from "~/lib/LightScheduler";
-import { templateLiteral } from "@babel/types";
+import NoSleep from "nosleep.js";
 
 interface SafariWindow {
   webkitAudioContext: AudioContext;
 }
 
+const noSleep = new NoSleep();
 const context = new (window.AudioContext || (<SafariWindow><unknown>window).webkitAudioContext)()
 const clickScheduler = new ClickScheduler({ context, bpm: 60 });
 let lightScheduler: LightScheduler | null = null;
@@ -79,6 +80,9 @@ export const actions = {
       window.requestAnimationFrame((timestamp: number) => {
         dispatch("tick", timestamp)
       });
+      noSleep.enable();
+    } else {
+      noSleep.disable();
     }
   },
   tick({ state, dispatch }: any, timestamp: number) {
