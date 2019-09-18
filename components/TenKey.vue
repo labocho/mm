@@ -18,7 +18,10 @@
     <div class="row" style="height: 25%">
       <a class="col-4 tenkey-key" @touchstart.prevent="onClickNumkey(0)">0</a>
       <a class="col-4 tenkey-key" />
-      <a class="col-4 tenkey-key" @touchstart.prevent="onClickToggle">▶</a>
+      <a class="col-4 tenkey-key" @touchstart.prevent="onClickToggle">
+        <font-awesome-icon icon="play" v-if="!isRunning" />
+        <font-awesome-icon icon="pause" v-if="isRunning" />
+      </a>
     </div>
   </div>
 </template>
@@ -38,6 +41,9 @@ export default {
     };
   },
   computed: {
+    isRunning() {
+      return this.$store.state.running;
+    },
     validValue() {
       if (this.value > 250) {
         return 250;
