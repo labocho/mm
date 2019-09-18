@@ -30,11 +30,6 @@
 <script>
 
 export default {
-  data() {
-    return {
-      value: this.$store.state.bpm,
-    };
-  },
   computed: {
     isRunning() {
       return this.$store.state.running;
@@ -53,18 +48,19 @@ export default {
   },
   methods: {
     onTapAdd(i) {
-      this.value += i;
-      this.$store.dispatch("updateDisplayBpm", this.value);
+      const n = (this.$store.state.displayBpm + 1) % 1000;
+      this.$store.dispatch("updateDisplayBpm", n);
     },
     onTapNumkey(i) {
+      let n;
       if (this.$store.state.numKeyTimeoutTimer === null) {
-        this.value = i;
+        n = i;
       } else {
-        this.value = (this.value * 10 + i) % 1000;
+        n = (this.$store.state.displayBpm * 10 + i) % 1000;
       }
 
       this.$store.dispatch("numkeyTapped", new Date().getTime());
-      this.$store.dispatch("updateDisplayBpm", this.value);
+      this.$store.dispatch("updateDisplayBpm", n);
     },
     onTapTapkey() {
       this.$store.dispatch("tap", new Date().getTime());
