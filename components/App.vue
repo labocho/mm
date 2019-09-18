@@ -2,11 +2,11 @@
   .ui-box
     link(rel="stylesheet", href="/application.css")
     #tenkey.ui
-      .row(style="height: 24%")
+      .row(style="height: 40%")
         .lcd.col-12
           input(name="bpm", type="number", :value="bpmText", :style="bpmStyle")
           font-awesome-icon#light(ref="light", icon="circle", :style="{display: isRunning ? 'inline' : 'none'}")
-      TenKey(:initial-value="this.$store.state.displayBpm", style="height: 76%")
+      TenKey(style="height: 60%")
 </template>
 
 <script>
