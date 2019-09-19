@@ -7,6 +7,12 @@ interface SafariWindow {
   webkitAudioContext: AudioContext;
 }
 
+const INITIAL_BPM = 60;
+const BPM_MIN = 30;
+const BPM_MAX = 299;
+const TAP_TIMEOUT = 2000; // 30bpm まで待つ
+const NUM_KEY_TIMEOUT = 2000;
+
 const noSleep = new NoSleep();
 const context = new (window.AudioContext || (<SafariWindow><unknown>window).webkitAudioContext)()
 const clickScheduler = new ClickScheduler({ context, bpm: 60 });
@@ -22,8 +28,8 @@ interface State {
 }
 
 export const state = () => ({
-  bpm: 60,
-  displayBpm: 60,
+  bpm: INITIAL_BPM,
+  displayBpm: INITIAL_BPM,
   numKeyTimeoutTimer: null,
   running: false,
   tapBegin: null,
@@ -71,7 +77,7 @@ export const mutations = {
   updateDisplayBpm({ commit }: any, bpm: number) {
     commit("updateDisplayBpm", bpm);
 
-    if (30 <= bpm && bpm < 300) {
+    if (BPM_MIN <= bpm && bpm <= BPM_MAX) {
       commit("updateBpm", bpm);
       clickScheduler.bpm = bpm;
     }
@@ -104,7 +110,7 @@ export const mutations = {
     if (state.tapBegin === null) {
       const timer = window.setTimeout(() => {
         commit("updateTapBegin", null);
-      }, 2000); // 30bpm まで待つ
+      }, TAP_TIMEOUT); // 30bpm まで待つ
 
       commit("updateTapBegin", timestamp);
       commit("updateTapTimeoutTimer", timer);
@@ -127,7 +133,7 @@ export const mutations = {
 
     const timer = setTimeout(() => {
       commit("updateNumKeyTimeoutTimer", null);
-    }, 2000);
+    }, NUM_KEY_TIMEOUT);
     commit("updateNumKeyTimeoutTimer", timer);
   },
 }
