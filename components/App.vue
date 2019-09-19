@@ -41,11 +41,6 @@ export default {
     const light = new Light(this.$refs.light);
     this.$store.dispatch("setLight", light);
   },
-  methods: {
-    toggle() {
-      this.app.toggle();
-    },
-  },
 }
 </script>
 

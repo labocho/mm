@@ -55,13 +55,16 @@ export const mutations = {
     }
     state.tapTimeoutTimer = timer;
   },
-  toggle(state: State) {
-    state.running = !state.running;
+  start(state: State) {
+    state.running = true;
     state.displayBpm = state.bpm;
+  },
+  stop(state: State) {
+    state.running = false;
   },
 }
 
-export const actions = {
+  export const actions = {
   setLight({ commit }: any, light: Light) {
     lightScheduler = new LightScheduler(light);
   },
@@ -73,17 +76,17 @@ export const actions = {
       clickScheduler.bpm = bpm;
     }
   },
-  toggle({ commit, state, dispatch }: any) {
-    commit("toggle");
-    if (state.running) {
-      clickScheduler.clickNow();
-      window.requestAnimationFrame((timestamp: number) => {
-        dispatch("tick", timestamp)
-      });
-      noSleep.enable();
-    } else {
-      noSleep.disable();
-    }
+  start({ commit, dispatch }: any) {
+    commit("start");
+    clickScheduler.clickNow();
+    window.requestAnimationFrame((timestamp: number) => {
+      dispatch("tick", timestamp)
+    });
+    noSleep.enable();
+  },
+  stop({ commit }: any) {
+    commit("stop");
+    noSleep.disable();
   },
   tick({ state, dispatch }: any, timestamp: number) {
     let r = null;
@@ -111,6 +114,10 @@ export const actions = {
       commit("updateTapBegin", null);
       commit("updateTapTimeoutTimer", null);
       dispatch("updateDisplayBpm", Math.round(bpm % 1000));
+
+      if (!state.running) {
+        dispatch("start");
+      }
     }
   },
   numkeyTapped({ commit, state }: any, timestamp: number) {

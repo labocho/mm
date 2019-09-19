@@ -66,7 +66,11 @@ export default {
       this.$store.dispatch("tap", new Date().getTime());
     },
     onTapToggle() {
-      this.$store.dispatch("toggle");
+      if (this.$store.state.running) {
+        this.$store.dispatch("stop");
+      } else {
+        this.$store.dispatch("start");
+      }
     },
   },
 }
