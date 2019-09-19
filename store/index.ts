@@ -8,6 +8,7 @@ interface SafariWindow {
 }
 
 const INITIAL_BPM = 60;
+const INITIAL_VOLUME = 1.0;
 const BPM_MIN = 30;
 const BPM_MAX = 299;
 const TAP_TIMEOUT = 2000; // 30bpm まで待つ
@@ -25,6 +26,7 @@ interface State {
   running: boolean;
   tapBegin: number | null;
   tapTimeoutTimer: number | null;
+  volume: number;
 }
 
 export const state = () => ({
@@ -34,6 +36,7 @@ export const state = () => ({
   running: false,
   tapBegin: null,
   tapTimeoutTimer: null,
+  volume: INITIAL_VOLUME,
 })
 
 export const getters = {
@@ -60,6 +63,9 @@ export const mutations = {
       window.clearTimeout(state.tapTimeoutTimer);
     }
     state.tapTimeoutTimer = timer;
+  },
+  updateVolume(state: State, volume: number) {
+    state.volume = volume;
   },
   start(state: State) {
     state.running = true;
@@ -97,7 +103,7 @@ export const mutations = {
   tick({ state, dispatch }: any, timestamp: number) {
     let r = null;
     if (state.running) {
-      r = clickScheduler.enqueue(timestamp);
+      r = clickScheduler.enqueue(timestamp, state.volume);
     }
     if (lightScheduler) {
       lightScheduler.tick(timestamp, r);
@@ -135,5 +141,8 @@ export const mutations = {
       commit("updateNumKeyTimeoutTimer", null);
     }, NUM_KEY_TIMEOUT);
     commit("updateNumKeyTimeoutTimer", timer);
+  },
+  updateVolume({ commit }: any, volume: number) {
+    commit("updateVolume", volume);
   },
 }

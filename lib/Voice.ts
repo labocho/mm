@@ -6,9 +6,9 @@ const DEFAULT_VALUES = {
 };
 
 class Voice {
+  public volume: number;
   private context: AudioContext;
   private frequency: number;
-  private volume: number;
   private attack: number;
   private release: number;
   private isPlaying: boolean;
