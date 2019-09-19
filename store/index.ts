@@ -1,11 +1,13 @@
 import ClickScheduler from "~/lib/ClickScheduler";
 import Light from "~/lib/Light";
 import LightScheduler from "~/lib/LightScheduler";
+import NoSleep from "nosleep.js";
 
 interface SafariWindow {
   webkitAudioContext: AudioContext;
 }
 
+const noSleep = new NoSleep();
 const context = new (window.AudioContext || (<SafariWindow><unknown>window).webkitAudioContext)()
 const clickScheduler = new ClickScheduler({ context, bpm: 60 });
 let lightScheduler: LightScheduler | null = null;
@@ -13,13 +15,19 @@ let lightScheduler: LightScheduler | null = null;
 interface State {
   bpm: number;
   displayBpm: number;
+  numKeyTimeoutTimer: number | null;
   running: boolean;
+  tapBegin: number | null;
+  tapTimeoutTimer: number | null;
 }
 
 export const state = () => ({
   bpm: 60,
   displayBpm: 60,
+  numKeyTimeoutTimer: null,
   running: false,
+  tapBegin: null,
+  tapTimeoutTimer: null,
 })
 
 export const getters = {
@@ -34,6 +42,18 @@ export const mutations = {
   },
   updateDisplayBpm(state: State, bpm: number) {
     state.displayBpm = bpm;
+  },
+  updateNumKeyTimeoutTimer(state: State, timer: number | null) {
+    state.numKeyTimeoutTimer = timer;
+  },
+  updateTapBegin(state: State, timestamp: number | null) {
+    state.tapBegin = timestamp;
+  },
+  updateTapTimeoutTimer(state: State, timer: number | null) {
+    if (state.tapTimeoutTimer !== null) {
+      window.clearTimeout(state.tapTimeoutTimer);
+    }
+    state.tapTimeoutTimer = timer;
   },
   toggle(state: State) {
     state.running = !state.running;
@@ -60,6 +80,9 @@ export const actions = {
       window.requestAnimationFrame((timestamp: number) => {
         dispatch("tick", timestamp)
       });
+      noSleep.enable();
+    } else {
+      noSleep.disable();
     }
   },
   tick({ state, dispatch }: any, timestamp: number) {
@@ -73,5 +96,31 @@ export const actions = {
     window.requestAnimationFrame((timestamp: number) => {
       dispatch("tick", timestamp)
     });
+  },
+  tap({ commit, dispatch, state }: any, timestamp: number) {
+    if (state.tapBegin === null) {
+      const timer = window.setTimeout(() => {
+        commit("updateTapBegin", null);
+      }, 2000); // 30bpm まで待つ
+
+      commit("updateTapBegin", timestamp);
+      commit("updateTapTimeoutTimer", timer);
+    } else {
+      const bpm = 1 / ((timestamp - state.tapBegin) / 1000 / 60);
+
+      commit("updateTapBegin", null);
+      commit("updateTapTimeoutTimer", null);
+      dispatch("updateDisplayBpm", Math.round(bpm % 1000));
+    }
+  },
+  numkeyTapped({ commit, state }: any, timestamp: number) {
+    if (state.numKeyTimeoutTimer !== null) {
+      clearTimeout(state.numKeyTimeoutTimer);
+    }
+
+    const timer = setTimeout(() => {
+      commit("updateNumKeyTimeoutTimer", null);
+    }, 2000);
+    commit("updateNumKeyTimeoutTimer", timer);
   },
 }
