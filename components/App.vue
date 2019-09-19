@@ -2,13 +2,24 @@
   .ui-box
     link(rel="stylesheet", href="/application.css")
     #tenkey.ui
-      .row(style="height: 30%")
+      .row(style="height: 25%")
         .lcd.col-12
           input(name="bpm", type="number", :value="bpmText", :style="bpmStyle" readonly)
           font-awesome-icon#light(ref="light", icon="circle", :style="{display: isRunning ? 'inline' : 'none'}")
-      .row(style="height: 20%")
+      .row(style="height: 15%")
         .col-12
-          input(type="range" min="0" max="1" step="0.01" :value="this.$store.state.volume" @input="onChangeVolume" style="display: block; width: 90%; margin: 10px auto;")
+          vue-slider(
+            style="width: 100%; margin: auto 10% auto 10%;"
+            :value="this.$store.state.volume"
+            @change="onChangeVolume"
+            :dotSize="32"
+            :min="0"
+            :max="1"
+            :interval="0.01"
+            :process="false"
+            tooltip="none"
+            :dotOptions="{focusStyle: {boxShadow: 'none'}}"
+          )
       TenKey(style="height: 60%")
 </template>
 
@@ -45,8 +56,8 @@ export default {
     this.$store.dispatch("setLight", light);
   },
   methods: {
-    onChangeVolume(e) {
-      this.$store.dispatch("updateVolume", parseFloat(e.target.value, 10));
+    onChangeVolume(value) {
+      this.$store.dispatch("updateVolume", value);
     },
   },
 }
