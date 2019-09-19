@@ -56,7 +56,7 @@ export default {
       if (this.$store.state.numKeyTimeoutTimer === null) {
         n = i;
       } else {
-        n = (this.$store.state.displayBpm * 10 + i) % 1000;
+        n = this.trimTempo(this.$store.state.displayBpm * 10 + i);
       }
 
       this.$store.dispatch("numkeyTapped", new Date().getTime());
@@ -71,6 +71,13 @@ export default {
       } else {
         this.$store.dispatch("start");
       }
+    },
+    trimTempo(n) {
+      n = n % 1000;
+      if (n > 299) {
+        n = n % 100;
+      }
+      return n;
     },
   },
 }
