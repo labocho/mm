@@ -17,6 +17,11 @@ class ClickScheduler {
 
   // frameTime は requestAnimationFrame から渡される値で millisecond (double)
   enqueue(frameTime: number): number | null {
+    // Safari を閉じたときにこの state になり、currentTime が更新されなくなるのを防ぐ
+    if (this.context.state === <AudioContextState>"interrupted") {
+      this.context.resume();
+    }
+
     // 25ms 以内に次の音を鳴らすべきなら enqueue
     const untilNextNote: number = this.nextNoteTime - this.context.currentTime; // in seconds (double)
     if (untilNextNote > 0.025) { return null; }
