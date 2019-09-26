@@ -7,6 +7,13 @@ interface SafariWindow {
   webkitAudioContext: AudioContext;
 }
 
+const INITIAL_BPM = 60;
+const INITIAL_VOLUME = 1.0;
+const BPM_MIN = 30;
+const BPM_MAX = 299;
+const TAP_TIMEOUT = 2000; // 30bpm まで待つ
+const NUM_KEY_TIMEOUT = 2000;
+
 const noSleep = new NoSleep();
 const context = new (window.AudioContext || (<SafariWindow><unknown>window).webkitAudioContext)()
 const clickScheduler = new ClickScheduler({ context, bpm: 60 });
@@ -19,15 +26,17 @@ interface State {
   running: boolean;
   tapBegin: number | null;
   tapTimeoutTimer: number | null;
+  volume: number;
 }
 
 export const state = () => ({
-  bpm: 60,
-  displayBpm: 60,
+  bpm: INITIAL_BPM,
+  displayBpm: INITIAL_BPM,
   numKeyTimeoutTimer: null,
   running: false,
   tapBegin: null,
   tapTimeoutTimer: null,
+  volume: INITIAL_VOLUME,
 })
 
 export const getters = {
@@ -55,40 +64,46 @@ export const mutations = {
     }
     state.tapTimeoutTimer = timer;
   },
-  toggle(state: State) {
-    state.running = !state.running;
+  updateVolume(state: State, volume: number) {
+    state.volume = volume;
+  },
+  start(state: State) {
+    state.running = true;
     state.displayBpm = state.bpm;
+  },
+  stop(state: State) {
+    state.running = false;
   },
 }
 
-export const actions = {
+  export const actions = {
   setLight({ commit }: any, light: Light) {
     lightScheduler = new LightScheduler(light);
   },
   updateDisplayBpm({ commit }: any, bpm: number) {
     commit("updateDisplayBpm", bpm);
 
-    if (30 <= bpm && bpm < 300) {
+    if (BPM_MIN <= bpm && bpm <= BPM_MAX) {
       commit("updateBpm", bpm);
       clickScheduler.bpm = bpm;
     }
   },
-  toggle({ commit, state, dispatch }: any) {
-    commit("toggle");
-    if (state.running) {
-      clickScheduler.clickNow();
-      window.requestAnimationFrame((timestamp: number) => {
-        dispatch("tick", timestamp)
-      });
-      noSleep.enable();
-    } else {
-      noSleep.disable();
-    }
+  start({ commit, dispatch }: any) {
+    commit("start");
+    clickScheduler.clickNow();
+    window.requestAnimationFrame((timestamp: number) => {
+      dispatch("tick", timestamp)
+    });
+    noSleep.enable();
+  },
+  stop({ commit }: any) {
+    commit("stop");
+    noSleep.disable();
   },
   tick({ state, dispatch }: any, timestamp: number) {
     let r = null;
     if (state.running) {
-      r = clickScheduler.enqueue(timestamp);
+      r = clickScheduler.enqueue(timestamp, state.volume);
     }
     if (lightScheduler) {
       lightScheduler.tick(timestamp, r);
@@ -101,7 +116,7 @@ export const actions = {
     if (state.tapBegin === null) {
       const timer = window.setTimeout(() => {
         commit("updateTapBegin", null);
-      }, 2000); // 30bpm まで待つ
+      }, TAP_TIMEOUT); // 30bpm まで待つ
 
       commit("updateTapBegin", timestamp);
       commit("updateTapTimeoutTimer", timer);
@@ -111,6 +126,10 @@ export const actions = {
       commit("updateTapBegin", null);
       commit("updateTapTimeoutTimer", null);
       dispatch("updateDisplayBpm", Math.round(bpm % 1000));
+
+      if (!state.running) {
+        dispatch("start");
+      }
     }
   },
   numkeyTapped({ commit, state }: any, timestamp: number) {
@@ -120,7 +139,10 @@ export const actions = {
 
     const timer = setTimeout(() => {
       commit("updateNumKeyTimeoutTimer", null);
-    }, 2000);
+    }, NUM_KEY_TIMEOUT);
     commit("updateNumKeyTimeoutTimer", timer);
+  },
+  updateVolume({ commit }: any, volume: number) {
+    commit("updateVolume", volume);
   },
 }
