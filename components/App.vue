@@ -1,5 +1,6 @@
 <template lang="pug">
   .ui-box
+    #debug(style="position: absolute; color: #f00; top: 0; left: 0; width: 100%; font-size: 12px; word-break: break-word;")
     link(rel="stylesheet", href="/application.css")
     #tenkey.ui
       .row(style="height: 40%")
