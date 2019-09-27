@@ -27,7 +27,7 @@ class ClickScheduler {
     // 25ms 以内に次の音を鳴らすべきなら enqueue
     const untilNextNote: number = this.nextNoteTime - this.context.currentTime; // in seconds (double)
     if (Debug.enabled) {
-      Debug.print({state: this.context.state, currentTime: this.context.currentTime, nextNoteTime: this.nextNoteTime, untilNextNote});
+      Debug.print({state: this.context.state, currentTime: this.context.currentTime, nextNoteTime: this.nextNoteTime, untilNextNote, frameTime});
     }
     if (untilNextNote > 0.025) { return null; }
 
