@@ -1,4 +1,6 @@
 import Voice from "~/lib/Voice";
+import Debug from "~/lib/Debug";
+
 
 class ClickScheduler {
   public context: AudioContext;
@@ -24,6 +26,9 @@ class ClickScheduler {
 
     // 25ms 以内に次の音を鳴らすべきなら enqueue
     const untilNextNote: number = this.nextNoteTime - this.context.currentTime; // in seconds (double)
+    if (Debug.enabled) {
+      Debug.print({state: this.context.state, currentTime: this.context.currentTime, nextNoteTime: this.nextNoteTime, untilNextNote});
+    }
     if (untilNextNote > 0.025) { return null; }
 
     this.voice.volume = volume * volume;
