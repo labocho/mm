@@ -3,14 +3,15 @@
     #debug(style="position: absolute; color: #f00; top: 0; left: 0; width: 100%; font-size: 12px; word-break: break-word;")
     link(rel="stylesheet", href="/application.css")
     #tenkey.ui
-      .row(style="height: 25%")
+      .row(style="height: 40%")
         .lcd.col-12
+          font-awesome-icon#reload(icon="redo", @click="reload")
           input(name="bpm", type="number", :value="bpmText", :style="bpmStyle" readonly)
           font-awesome-icon#light(ref="light", icon="circle", :style="{display: isRunning ? 'inline' : 'none'}")
-      .row(style="height: 15%")
+      .row(style="height: 8%")
         .col-12
           vue-slider(
-            style="width: 100%; margin: auto 10% auto 10%;"
+            style="width: 100%; margin: 0 10% auto 10%;"
             :value="this.$store.state.volume"
             @change="onChangeVolume"
             :dotSize="32"
@@ -59,6 +60,9 @@ export default {
   methods: {
     onChangeVolume(value) {
       this.$store.dispatch("updateVolume", value);
+    },
+    reload() {
+      location.reload(true);
     },
   },
 }

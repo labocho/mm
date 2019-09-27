@@ -56,6 +56,12 @@ input[type="range"]::-webkit-slider-thumb {
   top: calc(50% - 18px);
 }
 
+#reload {
+  position: absolute;
+  left: 10%;
+  top: 10%;
+}
+
 .tenkey {
   display: flex;
   flex-direction: column;
