@@ -7,8 +7,8 @@ interface SafariWindow {
   webkitAudioContext: AudioContext;
 }
 
-const INITIAL_BPM = 60;
-const INITIAL_VOLUME = 1.0;
+const INITIAL_BPM = parseInt(localStorage.getItem("bpm") || "60", 10);
+const INITIAL_VOLUME = parseFloat(localStorage.getItem("volume") || "1.0");
 const BPM_MIN = 30;
 const BPM_MAX = 299;
 const TAP_TIMEOUT = 2000; // 30bpm まで待つ
@@ -16,7 +16,7 @@ const NUM_KEY_TIMEOUT = 2000;
 
 const noSleep = new NoSleep();
 const context = new (window.AudioContext || (<SafariWindow><unknown>window).webkitAudioContext)()
-const clickScheduler = new ClickScheduler({ context, bpm: 60 });
+const clickScheduler = new ClickScheduler({ context, bpm: INITIAL_BPM });
 let lightScheduler: LightScheduler | null = null;
 
 interface State {
@@ -48,6 +48,7 @@ export const getters = {
 export const mutations = {
   updateBpm(state: State, bpm: number) {
     state.bpm = bpm;
+    localStorage.setItem("bpm", bpm.toString());
   },
   updateDisplayBpm(state: State, bpm: number) {
     state.displayBpm = bpm;
@@ -66,6 +67,7 @@ export const mutations = {
   },
   updateVolume(state: State, volume: number) {
     state.volume = volume;
+    localStorage.setItem("volume", volume.toString());
   },
   start(state: State) {
     state.running = true;
